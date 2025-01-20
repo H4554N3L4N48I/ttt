@@ -22,3 +22,7 @@ $ ./todo done NUMBER      # Complete a todo
 $ ./todo help             # Show usage
 $ ./todo report           # Statistics
 ```
+
+## Example
+
+![todo-vid-2](https://github.com/user-attachments/assets/2a0270ef-e736-4ea1-8d68-ca64b92c0b2c)
