@@ -5,8 +5,28 @@
 #include "db.h"
 #include "todo.h"
 
+void help();
+
+void handle_command(sqlite3 *db, int argc, char *argv[]);
+
+int main(const int argc, char *argv[]) {
+    sqlite3 *db;
+    if (open_database(&db, "todo.db") != SQLITE_OK) {
+        fprintf(stderr, "Failed to open database.\n");
+        return 1;
+    }
+
+    create_table(db);
+
+    handle_command(db, argc, argv);
+
+    close_database(db);
+    return 0;
+}
+
 void help() {
-    printf("\nUsage :- ");
+    printf("\nWelcome to the Todo Command Line Interface Task Manager!\n");
+    printf("\nUsage:");
     printf("\n$ ./todo add \"todo item\"  # Add a new todo ");
     printf("\n$ ./todo ls               # Show remaining todos");
     printf("\n$ ./todo del NUMBER       # Delete a todo");
@@ -46,24 +66,9 @@ void handle_command(sqlite3 *db, int argc, char *argv[]) {
     } else if (strcmp(argv[1], "help") == 0) {
         help();
     } else if (strcmp(argv[1], "report") == 0) {
-        printf("Report functionality is not implemented yet.\n");
+        print_report(db);
     } else {
         printf("Error: Unknown command '%s'\n", argv[1]);
         help();
     }
-}
-
-int main(const int argc, char *argv[]) {
-    sqlite3 *db;
-    if (open_database(&db, "todo.db") != SQLITE_OK) {
-        fprintf(stderr, "Failed to open database.\n");
-        return 1;
-    }
-
-    create_table(db);
-
-    handle_command(db, argc, argv);
-
-    close_database(db);
-    return 0;
 }

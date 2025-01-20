@@ -31,8 +31,7 @@ void list_tasks(sqlite3 *db) {
         return;
     }
 
-    printf("\nList of tasks:\n");
-    printf("ID  | Description                 | Status   | Created At\n");
+    printf("\nID  | Description                 | Status   | Created At\n");
     printf("------------------------------------------------------------------\n");
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
@@ -47,7 +46,7 @@ void list_tasks(sqlite3 *db) {
                status == 0 ? "Pending" : "Done",
                created_at ? created_at : "(unknown)");
     }
-
+    printf("\n");
     sqlite3_finalize(stmt);
 }
 
@@ -69,6 +68,42 @@ void mark_task_done(sqlite3 *db, int task_id) {
     }
 
     sqlite3_finalize(stmt);
+}
+
+
+void print_report(sqlite3 *db) {
+    const char *sql_done = "SELECT COUNT(*) FROM tasks WHERE status = 1;";
+    const char *sql_pending = "SELECT COUNT(*) FROM tasks WHERE status = 0;";
+
+    sqlite3_stmt *stmt_done;
+    sqlite3_stmt *stmt_pending;
+
+    if (sqlite3_prepare_v2(db, sql_done, -1, &stmt_done, NULL) != SQLITE_OK) {
+        fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+        return;
+    }
+
+    if (sqlite3_prepare_v2(db, sql_pending, -1, &stmt_pending, NULL) != SQLITE_OK) {
+        fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+        sqlite3_finalize(stmt_done);
+        return;
+    }
+
+    sqlite3_step(stmt_done);
+    int done_count = sqlite3_column_int(stmt_done, 0);
+
+    sqlite3_step(stmt_pending);
+    int pending_count = sqlite3_column_int(stmt_pending, 0);
+
+    printf("\n  Task Report:\n");
+    printf("----------------\n");
+    printf("Status  |  Count\n");
+    printf("----------------\n");
+    printf("Done    |  %d\n", done_count);
+    printf("Pending |  %d\n", pending_count);
+
+    sqlite3_finalize(stmt_done);
+    sqlite3_finalize(stmt_pending);
 }
 
 
