@@ -3,6 +3,8 @@ project(todo_cli_lite C)
 
 set(CMAKE_C_STANDARD 99)
 
+include_directories(src/ /usr/local/include)
+link_directories(/usr/local/lib)
 
 add_executable(todo_cli_lite src/main.c
         src/db.h
@@ -10,7 +12,7 @@ add_executable(todo_cli_lite src/main.c
 
 # Tests
 add_executable(test_db tests/test_db.c src/db.c)
-target_link_libraries(test_db cunit)
+target_link_libraries(test_db cunit sqlite3)
 
 add_executable(test_todo tests/test_todo.c src/todo.c)
-target_link_libraries(test_todo cunit)
+target_link_libraries(test_todo cunit sqlite3)
