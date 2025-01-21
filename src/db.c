@@ -1,5 +1,4 @@
 #include "db.h"
-#include <sqlite3.h>
 #include <stdio.h>
 
 int open_database(sqlite3 **db, const char *path) {
@@ -32,5 +31,23 @@ int execute_sql(sqlite3 *db, const char *sql) {
         fprintf(stderr, "SQL error: %s\n", errmsg);
         sqlite3_free(errmsg);
     }
+    return rc;
+}
+
+int execute_sql_text_param(sqlite3 *db, const char *sql, const char *param) {
+    sqlite3_stmt *stmt;
+    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    sqlite3_bind_text(stmt, 1, param, -1, SQLITE_STATIC);
+    const int rc = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
+    return rc;
+}
+
+int execute_sql_int_param(sqlite3 *db, const char *sql, const int param) {
+    sqlite3_stmt *stmt;
+    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
+    sqlite3_bind_int(stmt, 1, param);
+    const int rc = sqlite3_step(stmt);
+    sqlite3_finalize(stmt);
     return rc;
 }

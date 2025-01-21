@@ -1,7 +1,8 @@
-#include <sqlite3.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "todo.h"
+#include "db.h"
 
 
 void add_task(sqlite3 *db, const char *description) {
@@ -11,16 +12,39 @@ void add_task(sqlite3 *db, const char *description) {
     }
 
     const char *sql = "INSERT INTO tasks (description) VALUES (?);";
-    sqlite3_stmt *stmt;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_text(stmt, 1, description, -1, SQLITE_STATIC);
+    const int rc = execute_sql_text_param(db, sql, description);
+    if (rc != SQLITE_DONE)
+        printf("Error: '%s'", sqlite3_errmsg(db));
+}
 
-    if (sqlite3_step(stmt) != SQLITE_DONE) {
-        fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+
+void mark_task_done(sqlite3 *db, int task_id) {
+    if (task_id <= 0) {
+        fprintf(stderr, "Error: Invalid task ID.\n");
         return;
     }
 
-    sqlite3_finalize(stmt);
+    const char *sql = "UPDATE tasks SET status = 1 WHERE task_id = ?;";
+    const int rc = execute_sql_int_param(db, sql, task_id);
+
+    if (rc != SQLITE_DONE) {
+        fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+    }
+}
+
+
+void delete_task(sqlite3 *db, const int task_id) {
+    if (task_id <= 0) {
+        fprintf(stderr, "Error: Invalid task ID.\n");
+        return;
+    }
+
+    const char *sql = "DELETE FROM tasks WHERE task_id = ?;";
+    const int rc = execute_sql_int_param(db, sql, task_id);
+
+    if (rc != SQLITE_DONE) {
+        fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+    }
 }
 
 void list_tasks(sqlite3 *db) {
@@ -48,26 +72,6 @@ void list_tasks(sqlite3 *db) {
                created_at ? created_at : "(unknown)");
     }
     printf("\n");
-    sqlite3_finalize(stmt);
-}
-
-
-void mark_task_done(sqlite3 *db, int task_id) {
-    if (task_id <= 0) {
-        fprintf(stderr, "Error: Invalid task ID.\n");
-        return;
-    }
-
-    const char *sql = "UPDATE tasks SET status = 1 WHERE task_id = ?;";
-    sqlite3_stmt *stmt;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_int(stmt, 1, task_id);
-
-    if (sqlite3_step(stmt) != SQLITE_DONE) {
-        fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
-        return;
-    }
-
     sqlite3_finalize(stmt);
 }
 
@@ -107,25 +111,6 @@ void print_report(sqlite3 *db) {
     sqlite3_finalize(stmt_pending);
 }
 
-
-void delete_task(sqlite3 *db, const int task_id) {
-    if (task_id <= 0) {
-        fprintf(stderr, "Error: Invalid task ID.\n");
-        return;
-    }
-
-    const char *sql = "DELETE FROM tasks WHERE task_id = ?;";
-    sqlite3_stmt *stmt;
-    sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
-    sqlite3_bind_int(stmt, 1, task_id);
-
-    if (sqlite3_step(stmt) != SQLITE_DONE) {
-        fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
-        return;
-    }
-
-    sqlite3_finalize(stmt);
-}
 
 void help() {
     printf("\nWelcome to the Todo Command Line Interface Task Manager!\n");

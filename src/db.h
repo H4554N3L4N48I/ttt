@@ -14,4 +14,9 @@ int create_table(sqlite3 *db);
 
 int execute_sql(sqlite3 *db, const char *sql);
 
+int execute_sql_text_param(sqlite3 *db, const char *sql, const char *param);
+
+int execute_sql_int_param(sqlite3 *db, const char *sql, int param);
+
+
 #endif
