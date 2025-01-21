@@ -5,12 +5,26 @@ void test_open_database() {
     sqlite3 *db;
     int const result = open_database(&db, "test.db");
     CU_ASSERT(result == SQLITE_OK);
+    CU_ASSERT(db != NULL);
+    sqlite3_close(db);
 }
 
 void test_create_table() {
     sqlite3 *db;
     open_database(&db, "test.db");
-    create_table(db);
+    int rc = create_table(db);
+    CU_ASSERT(rc == SQLITE_OK);
+
+    const char *query = "SELECT name FROM sqlite_master WHERE type='table' AND name='tasks';";
+    sqlite3_stmt *stmt;
+    rc = sqlite3_prepare_v2(db, query, -1, &stmt, 0);
+    CU_ASSERT(rc == SQLITE_OK);
+
+    rc = sqlite3_step(stmt);
+    CU_ASSERT(rc == SQLITE_ROW);
+
+    sqlite3_finalize(stmt);
+    sqlite3_close(db);
 }
 
 void cleanup() {

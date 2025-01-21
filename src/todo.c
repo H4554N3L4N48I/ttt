@@ -1,5 +1,6 @@
 #include <sqlite3.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 
@@ -124,4 +125,16 @@ void delete_task(sqlite3 *db, const int task_id) {
     }
 
     sqlite3_finalize(stmt);
+}
+
+void help() {
+    printf("\nWelcome to the Todo Command Line Interface Task Manager!\n");
+    printf("\nUsage:");
+    printf("\n$ ./todo add \"todo item\"  # Add a new todo ");
+    printf("\n$ ./todo ls               # Show remaining todos");
+    printf("\n$ ./todo del NUMBER       # Delete a todo");
+    printf("\n$ ./todo done NUMBER      # Complete a todo");
+    printf("\n$ ./todo help             # Show usage");
+    printf("\n$ ./todo report           # Statistics\n");
+    exit(1);
 }
