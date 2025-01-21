@@ -36,39 +36,59 @@ void help() {
     exit(1);
 }
 
+typedef enum {
+    CMD_ADD,
+    CMD_LS,
+    CMD_DONE,
+    CMD_REPORT,
+    CMD_DEL,
+    CMD_HELP,
+    CMD_UNKNOWN
+} Command;
+
+Command get_cmd(const char *cmd) {
+    if (strcmp(cmd, "add") == 0) return CMD_ADD;
+    if (strcmp(cmd, "ls") == 0) return CMD_LS;
+    if (strcmp(cmd, "done") == 0) return CMD_DONE;
+    if (strcmp(cmd, "report") == 0) return CMD_REPORT;
+    if (strcmp(cmd, "del") == 0) return CMD_DEL;
+    if (strcmp(cmd, "help") == 0) return CMD_HELP;
+    return CMD_UNKNOWN;
+}
+
+
 void handle_command(sqlite3 *db, int argc, char *argv[]) {
-    if (argc < 2) {
+    if (argc < 2)
+        help();
+
+    const Command cmd = get_cmd(argv[1]);
+
+    if ((cmd == CMD_ADD || cmd == CMD_DONE || cmd == CMD_DEL) && argc < 3) {
+        printf("\nError: missing argument for '%s'\n", argv[1]);
         help();
     }
 
-    if (strcmp(argv[1], "add") == 0) {
-        if (argc < 3) {
-            printf("Error: Missing todo item description\n");
+    switch (cmd) {
+        case CMD_ADD:
+            add_task(db, argv[2]);
+            break;
+        case CMD_LS:
+            list_tasks(db);
+            break;
+        case CMD_DONE:
+            mark_task_done(db, atoi(argv[2]));
+            break;
+        case CMD_REPORT:
+            print_report(db);
+            break;
+        case CMD_DEL:
+            delete_task(db, atoi(argv[2]));
+            break;
+        case CMD_HELP:
             help();
-        }
-        add_task(db, argv[2]);
-    } else if (strcmp(argv[1], "ls") == 0) {
-        list_tasks(db);
-    } else if (strcmp(argv[1], "del") == 0) {
-        if (argc < 3) {
-            printf("Error: Missing task ID\n");
+        case CMD_UNKNOWN:
+        default:
+            printf("\nError: Unknown command '%s'\n", argv[1]);
             help();
-        }
-        int del_id = atoi(argv[2]);
-        delete_task(db, del_id);
-    } else if (strcmp(argv[1], "done") == 0) {
-        if (argc < 3) {
-            printf("Error: Missing task ID\n");
-            help();
-        }
-        const int done_id = atoi(argv[2]);
-        mark_task_done(db, done_id);
-    } else if (strcmp(argv[1], "help") == 0) {
-        help();
-    } else if (strcmp(argv[1], "report") == 0) {
-        print_report(db);
-    } else {
-        printf("Error: Unknown command '%s'\n", argv[1]);
-        help();
     }
 }

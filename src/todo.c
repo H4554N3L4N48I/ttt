@@ -107,7 +107,7 @@ void print_report(sqlite3 *db) {
 }
 
 
-void delete_task(sqlite3 *db, int task_id) {
+void delete_task(sqlite3 *db, const int task_id) {
     if (task_id <= 0) {
         fprintf(stderr, "Error: Invalid task ID.\n");
         return;
