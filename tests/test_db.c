@@ -27,8 +27,9 @@ void test_create_table() {
     sqlite3_close(db);
 }
 
-void cleanup() {
+int cleanup() {
     remove("test.db");
+    return 0;
 }
 
 
