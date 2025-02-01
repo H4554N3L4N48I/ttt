@@ -1,8 +1,8 @@
 #include <CUnit/Basic.h>
 #include <sqlite3.h>
 #include <stdio.h>
-#include "db.h"
-#include "cmd_handler.h"
+#include "../src/db.h"
+#include "../src/cmd_handler.h"
 
 sqlite3 *db;
 

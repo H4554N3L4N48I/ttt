@@ -1,5 +1,5 @@
 #include <CUnit/Basic.h>
-#include "db.h"
+#include "../src/db.h"
 
 void test_open_database() {
     sqlite3 *db;
