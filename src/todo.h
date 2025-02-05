@@ -3,6 +3,8 @@
 
 #include <sqlite3.h>
 
+char* format_time(char* str, int seconds);
+
 void add_task(sqlite3 *db, const char *task);
 
 void list_tasks(sqlite3 *db);

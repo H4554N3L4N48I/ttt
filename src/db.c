@@ -17,6 +17,7 @@ int create_table(sqlite3 *db) {
              "task_id INTEGER PRIMARY KEY AUTOINCREMENT, "
              "description TEXT NOT NULL, "
              "status INTEGER NOT NULL DEFAULT 0, "
+	     "elapsed_time INTEGER NOT NULL DEFAULT 0, "
              "created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
              ");",
              TABLE_NAME);

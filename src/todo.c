@@ -5,6 +5,17 @@
 #include "db.h"
 
 
+char* format_time(char* str, int seconds) {
+  int hours = seconds / 3600;
+  seconds = seconds % 3600;
+
+  int minutes = seconds / 60;
+  seconds = seconds % 60;
+
+  sprintf(str, "%02dh%02dm%02ds", hours, minutes, seconds);
+  return str;
+}
+
 void add_task(sqlite3 *db, const char *description) {
     if (!description || strlen(description) == 0) {
         fprintf(stderr, "Error: Task description cannot be empty.\n");
@@ -48,7 +59,7 @@ void delete_task(sqlite3 *db, const int task_id) {
 }
 
 void list_tasks(sqlite3 *db) {
-    const char *sql = "SELECT task_id, description, status, created_at FROM tasks;";
+    const char *sql = "SELECT task_id, description, status, elapsed_time, created_at FROM tasks;";
     sqlite3_stmt *stmt;
 
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) != SQLITE_OK) {
@@ -56,19 +67,22 @@ void list_tasks(sqlite3 *db) {
         return;
     }
 
-    printf("\nID  | Description                 | Status   | Created At\n");
-    printf("------------------------------------------------------------------\n");
+    printf("\nID  | Description                 | Status   | Elapsed Time | Created At\n");
+    printf("---------------------------------------------------------------------------------\n");
 
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         int const task_id = sqlite3_column_int(stmt, 0);
         const char *description = (const char *) sqlite3_column_text(stmt, 1);
         int const status = sqlite3_column_int(stmt, 2);
-        const char *created_at = (const char *) sqlite3_column_text(stmt, 3);
-
-        printf("%-3d | %-27.27s | %-8s | %s\n",
+	char elapsed_time_str[10];
+	int const elapsed_time = sqlite3_column_int(stmt, 3);
+        const char *created_at = (const char *) sqlite3_column_text(stmt, 4);
+	
+        printf("%-3d | %-27.27s | %-8s | %-13s| %s\n",
                task_id,
                description ? description : "(no description)",
                status == 0 ? "Pending" : "Done",
+	       format_time(elapsed_time_str, elapsed_time),
                created_at ? created_at : "(unknown)");
     }
     printf("\n");
