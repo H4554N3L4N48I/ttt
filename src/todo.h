@@ -15,6 +15,8 @@ void print_report(sqlite3 *db);
 
 void delete_task(sqlite3 *db, int task_id);
 
+void track_task(sqlite3 *db, int task_id);
+
 void help();
 
 #endif

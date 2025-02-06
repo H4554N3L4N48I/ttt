@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "todo.h"
 #include "db.h"
 
@@ -57,6 +58,58 @@ void delete_task(sqlite3 *db, const int task_id) {
         fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
     }
 }
+
+void track_task(sqlite3 *db, int task_id) {
+  if (task_id <= 0) {
+    fprintf(stderr, "Error: Invalid task ID.\n");
+    return;
+  }
+
+  sqlite3_stmt *stmt;
+  safe_prepare(db, &stmt, "SELECT elapsed_time FROM tasks WHERE task_id = ?");
+  sqlite3_bind_int(stmt, 1, task_id);
+  sqlite3_step(stmt);
+  int elapsed_time = sqlite3_column_int(stmt, 0);
+  sqlite3_finalize(stmt);
+
+  time_t safe_time(void) {
+    time_t now = time(NULL);
+    if (now == (time_t)(-1))
+      fprintf(stderr, "Error: could not read current time\n");
+    else
+      return now;
+  }
+      
+  time_t time_beg = safe_time();
+  printf("Tracking in progress...");
+
+  while(fgetc(stdin) != EOF);
+
+  time_t time_end = safe_time();
+  printf("Done\n");
+
+  int diff = (int) difftime(time_end, time_beg);
+  int new_elapsed_t = elapsed_time + diff;
+  
+  printf("Saving data............");
+
+  sqlite3_stmt *stmt_save;
+  safe_prepare(db, &stmt_save, "UPDATE tasks SET elapsed_time = ? WHERE task_id = ?");
+  sqlite3_bind_int(stmt_save, 1, new_elapsed_t);
+  sqlite3_bind_int(stmt_save, 2, task_id);
+
+  if (sqlite3_step(stmt) == SQLITE_DONE)
+    printf("Done\n");
+  else
+    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+
+  sqlite3_finalize(stmt_save);
+  char diff_str[10];
+  char new_et_str[10];
+  printf("Session elapsed time:  %s\n", format_time(diff_str, diff));
+  printf("Total elapsed time:    %s\n", format_time(new_et_str, new_elapsed_t));
+}
+
 
 void list_tasks(sqlite3 *db) {
     const char *sql = "SELECT task_id, description, status, elapsed_time, created_at FROM tasks;";
