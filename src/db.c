@@ -52,3 +52,11 @@ int execute_sql_int_param(sqlite3 *db, const char *sql, const int param) {
     sqlite3_finalize(stmt);
     return rc;
 }
+
+void safe_prepare(sqlite3 *db, sqlite3_stmt **stmt_pt, const char* sql) {
+  if (sqlite3_prepare_v2(db, sql, -1, stmt_pt, NULL) != SQLITE_OK) {
+    fprintf(stderr, "Error: %s\n", sqlite3_errmsg(db));
+    return;
+  }
+}
+

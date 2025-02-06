@@ -18,5 +18,6 @@ int execute_sql_text_param(sqlite3 *db, const char *sql, const char *param);
 
 int execute_sql_int_param(sqlite3 *db, const char *sql, int param);
 
+void safe_prepare(sqlite3 *db, sqlite3_stmt **stmt_pt, const char* sql);
 
 #endif
