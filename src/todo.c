@@ -180,13 +180,9 @@ void print_report(sqlite3 *db) {
 
 
 void help() {
-    printf("\nWelcome to the Todo Command Line Interface Task Manager!\n");
-    printf("\nUsage:");
-    printf("\n$ ./todo add \"todo item\"  # Add a new todo ");
-    printf("\n$ ./todo ls               # Show remaining todos");
-    printf("\n$ ./todo del NUMBER       # Delete a todo");
-    printf("\n$ ./todo done NUMBER      # Complete a todo");
-    printf("\n$ ./todo help             # Show usage");
-    printf("\n$ ./todo report           # Statistics\n");
-    exit(1);
+    printf("ttt - track time spent on various tasks\n");
+    printf("Usage:\n");
+    printf("ttt add TASK_NAME\n");
+    printf("ttt del|done|track TASK_ID\n");
+    printf("ttt ls|repot|help\n");
 }

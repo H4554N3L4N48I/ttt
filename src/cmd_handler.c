@@ -29,14 +29,17 @@ Command get_cmd(const char *cmd) {
 
 
 void handle_command(sqlite3 *db, int argc, char *argv[]) {
-    if (argc < 2)
+  if (argc < 2) {
         help();
+	return;
+  }
 
     const Command cmd = get_cmd(argv[1]);
 
     if ((cmd == CMD_ADD || cmd == CMD_DONE || cmd == CMD_DEL || cmd == CMD_TRACK) && argc < 3) {
         printf("\nError: missing argument for '%s'\n", argv[1]);
         help();
+	return;
     }
 
     switch (cmd) {
@@ -60,6 +63,7 @@ void handle_command(sqlite3 *db, int argc, char *argv[]) {
       break;
     case CMD_HELP:
       help();
+      break;
     case CMD_UNKNOWN:
     default:
       printf("\nError: Unknown command '%s'\n", argv[1]);
