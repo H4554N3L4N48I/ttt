@@ -1,28 +1,33 @@
-# todo-cli-lite
+# Overview
 
-Todo CLI Lite is a simple command-line interface (CLI) task manager that allows users to manage their tasks using SQLite.
+Task Time Tracker (`ttt`) is a simple command-line interface (CLI) task manager that allows users to manage their tasks and track time spent on them.
 
-It supports adding tasks, listing tasks, marking them as done, and deleting tasks.
-
-## Features
-
-* Add tasks: Add new tasks to your to-do list.
-* List tasks: View all tasks with their statuses (Pending or Done).
-* Mark tasks as done: Mark tasks as completed.
-* Delete tasks: Remove tasks from your to-do list.
-* Report: View a summary of completed and pending tasks.
-
-## Usage
+# Usage
 
 ```
-$ ./todo add "todo item"  # Add a new todo
-$ ./todo ls               # Show remaining todos
-$ ./todo del NUMBER       # Delete a todo
-$ ./todo done NUMBER      # Complete a todo
-$ ./todo help             # Show usage
-$ ./todo report           # Statistics
+$ ttt add TASK_NAME    # Add a new task
+$ ttt ls               # View a detailed listing of tasks (including their IDs)
+$ ttt track TASK_ID    # Start time tracking a task (use CTRL+D to stop)
+$ ttt del TASK_ID      # Delete a task
+$ ttt done TASK_ID     # Mark a task as done
+$ ttt help             # Print help message
+$ ttt report           # View a summary of completed and pending tasks
 ```
 
-## Example
+# Installation
 
-![todo-vid-2](https://github.com/user-attachments/assets/2a0270ef-e736-4ea1-8d68-ca64b92c0b2c)
+## Install Dependencies
+
+* Sqlite3
+* Make
+* Cunit (Optional: to run unit tests)
+
+## Compile the program
+
+* `cd ttt/`
+* `make` _produces the executable program_
+* `make test_db` and `make test_cmd_handler` _produce unit testing excutables_
+
+# Copyright
+
+`TODO`
